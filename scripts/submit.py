@@ -1,6 +1,6 @@
 from pathlib import Path
 import subprocess
-
+import pandas as pd
 from datetime import datetime
 
 message = datetime.now().strftime(
@@ -9,7 +9,7 @@ message = datetime.now().strftime(
 
 ROOT = Path(__file__).resolve().parents[1]
 
-HPC = "eged@hpc.robin.uiocloud.no"
+HPC = "kaiolae@fox.educloud.no"
 
 REMOTE_PROJECT = "~/IN5490-evogym-builder"
 
@@ -28,7 +28,15 @@ run(["python", "scripts/download_students.py"], cwd=ROOT)
 
 print("Committing...")
 
+run(["git", "remote", "set-url", "origin", "https://github.com/kaiolae/kaiSoftRobots.git"], cwd=ROOT)
+
+run(
+    ["git", "pull", "origin", "main", "--allow-unrelated-histories"],
+    cwd=ROOT,
+)
+
 run(["git", "add", "experiments/robots.json"], cwd=ROOT)
+
 
 run(
     [
@@ -39,6 +47,8 @@ run(
     ],
     cwd=ROOT,
 )
+
+
 
 print("Pushing...")
 
