@@ -270,32 +270,24 @@ function submitRobot(){
         "https://script.google.com/macros/s/AKfycbwuKqk9dqsnYFkHBklUzxEjRSTqR-VmQQbppbNanKi-vUKR4lg-jjgkUyxDpXDUOdLQ/exec",
         {
             method: "POST",
+            mode: "no-cors", // <--- LEGG TIL DENNE LINJEN
+            headers: {
+                "Content-Type": "text/plain" // Endret fra JSON for å unngå preflight-feil
+            },
             body: JSON.stringify(data)
         }
     )
-    .then(response => response.text())
-    .then(() => {
-
+    .then(() => { // Fjernet response.text() siden no-cors gjør responsen "opaque" (utilgjengelig)
         message("Robot submitted successfully!");
-
         clearGrid();
-
-        document.getElementById("student").value="";
-
-        // Keep button disabled permanently
+        document.getElementById("student").value = "";
         submitButton.innerHTML = "Submitted ✓";
-
     })
     .catch(error => {
-
         console.error(error);
-
         message("Submission failed. Try again.", "red");
-
-        // Only re-enable if submission failed
         submitButton.disabled = false;
         submitButton.innerHTML = "Submit Robot";
-
     });
 
 }
