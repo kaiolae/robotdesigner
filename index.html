@@ -243,10 +243,8 @@ function validateRobot(){
 
 }
 
-function submitRobot(){
-
+function submitRobot() {
     const submitButton = document.getElementById("submitButton");
-
     const student = document.getElementById("student").value.trim();
 
     if (student.length === 0) {
@@ -254,43 +252,59 @@ function submitRobot(){
         return;
     }
 
-    if(!validateRobot()) return;
+    if (!validateRobot()) return;
 
-    // Disable immediately after valid submission
+    // Deaktiver knappen under innsending
     submitButton.disabled = true;
     submitButton.innerHTML = "Submitting...";
 
-    const data={
+    const data = {
         student: student,
         timestamp: new Date().toISOString(),
         robot: robot
     };
 
+    // FJERN mode: "no-cors" for å kunne lese feilmeldinger
     fetch(
         "https://script.google.com/macros/s/AKfycbwEsOACX_wayM3IqpXXbDN_UN3ptKCMcuOHjvi8pJXjkX-bg6sDJhDCTpT6DI7wrgG_AQ/exec",
         {
             method: "POST",
-            mode: "no-cors", // <--- LEGG TIL DENNE LINJEN
             headers: {
-                "Content-Type": "text/plain" // Endret fra JSON for å unngå preflight-feil
+                "Content-Type": "text/plain;charset=utf-8" // Holder innholdstypen enkel for å unngå CORS-preflight problemer
             },
             body: JSON.stringify(data)
         }
     )
-    .then(() => { // Fjernet response.text() siden no-cors gjør responsen "opaque" (utilgjengelig)
+    .then(response => {
+        // Sjekk om HTTP-statusen er OK (2xx)
+        if (!response.ok) {
+            throw new Error("Serveren svarte med HTTP-status " + response.status);
+        }
+        return response.json(); // Tolk svaret som JSON
+    })
+    .then(resData => {
+        // Sjekk om Google Script rapporterte en intern feil (fra try/catch-blokken i doPost)
+        if (resData.status === "Failed") {
+            throw new Error(resData.error);
+        }
+
+        // Suksesshåndtering
         message("Robot submitted successfully!");
         clearGrid();
         document.getElementById("student").value = "";
         submitButton.innerHTML = "Submitted ✓";
     })
     .catch(error => {
-        console.error(error);
-        message("Submission failed. Try again.", "red");
+        // NÅ vil denne fange opp den nøyaktige feilmeldingen!
+        console.error("Innsendingsfeil:", error);
+        message("Error: " + error.message, "red");
+
+        // Aktiver knappen igjen så brukeren kan prøve på nytt
         submitButton.disabled = false;
         submitButton.innerHTML = "Submit Robot";
     });
-
 }
+
 
 </script>
 
