@@ -6,7 +6,7 @@ import pandas as pd
 
 CSV_URL = (
     "https://docs.google.com/spreadsheets/d/"
-    "1xjNLf0dq_C_HUTJ_lh3BHcqIBtfnZ0_K71IaSj4QlEg/export?format=csv"
+    "1wdNo9snBePx0XzwdndhOKxUpBL4Z7DkK55gIjuIzsU0/export?format=csv"
 )
 
 OUTPUT = Path("experiments/robots.json")
